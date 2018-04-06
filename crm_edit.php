@@ -20,7 +20,24 @@
     </head>
 
     <body>
+        <?php
+          $status = "";
+          $cust_account_number = "";
+          if(isset($_GET['status']) && isset($_GET['account_number'])){
+              $status = $_GET['status'];
+              $cust_account_number = $_GET['account_number'];
+          }
+          else{
+            header('Location: crm_home.php');
+          }
 
+          $con=mysqli_connect("localhost","root","","crm");
+          if(mysqli_connect_errno()){
+            echo "Failed to connect mysql";
+          }
+          $result = mysqli_query($con,"SELECT * FROM customer WHERE account_number = '$cust_account_number'");
+          $row = mysqli_fetch_array($result);
+        ?>
         <section id="container" >
             <header class="header black-bg">
                 <div class="sidebar-toggle-box">
@@ -102,10 +119,10 @@
                             <form action="crm_home_dao.php" method="post">
                                 <div align="right">
                                     <input type="submit" name ="submit_button" class="btn btn-round btn-primary" value="Save">
-                                    <input type="submit" name ="submit_button" class="btn btn-round btn-primary" value="Add">
+                                    <input type="submit" name ="submit_button" class="btn btn-round btn-primary" value="Add" disabled="true">
                                     <input type="submit" name ="submit_button" class="btn btn-round btn-primary" value="Edit">
                                     <input type="submit" name ="submit_button" class="btn btn-round btn-primary" value="Delete">
-                                    <input type="submit" name ="submit_button" class="btn btn-round btn-primary" value="Check Dukcapil">
+                                    <input type="submit" name ="submit_button" class="btn btn-round btn-primary" value="Check Dukcapil" disabled="true">
                                 </div>
                                 <table class="table table-hover" border='2'>
                                     <h4><i class="fa fa-angle-right"></i> Customer Details</h4>
@@ -116,10 +133,10 @@
                                                 <option value="Business">Business</option>
                                             </select></td>
                                         <td><b>Customer Account Number</b></td>
-                                        <td><input type="text" class="form-control"name="cust_acc_number"></td>
+                                        <td><input type="text" class="form-control"name="cust_acc_number" value="<?php echo $row['account_number'];?>"></td>
                                         <td><b>Dukcapil Status</b></td>
-                                        <td><select class="form-control" disabled="true" name="status_dukcapil">
-                                                <option value="Valid" selected="true">Valid</option>
+                                        <td><select class="form-control" name="status_dukcapil">
+                                                <option value="Valid">Valid</option>
                                                 <option value="Not Valid">Not Valid</option>
                                             </select></td>
                                     </tr>
@@ -141,16 +158,16 @@
                                                 <option value="Foreign">Foreign</option>
                                             </select></td>
                                         <td><b>NPWP Number</b></td>
-                                        <td colspan="3" ><input type="text" onkeyup="checkNumbers(this.id)" id="inputNPWP" class="form-control" name="npwp_num"></td>
+                                        <td colspan="3" ><input type="text" onkeyup="checkNumbers(this.id)" id="inputNPWP" class="form-control" name="npwp_num" value=<?php echo $row['npwp']; ?>></td>
                                     </tr>
                                     <tr>
                                         <td><b>Date Of Birth</b></td>
-                                        <td><input type="text" class="form-control" name="dob" placeholder="mm-dd-yyyy"></td>
+                                        <td><input type="text" class="form-control" name="dob" placeholder="mm-dd-yyyy" value="<?php echo $row['birth_date'];?>"></td>
                                         <td><b>Is Converted From Lead</b></td>
-                                        <td><input type="text" class="form-control" name="is_converted_from_lead" disabled="true"></td>
+                                        <td><input type="text" class="form-control" name="is_converted_from_lead" value="<?php echo $row['is_converted_from_lead'];?>"></td>
                                         <td><b>Customer Status</b></td>
-                                        <td><select class="form-control" disabled="true" name="cust_status">
-                                                <option value="Registered" selected="true">Registered</option>
+                                        <td><select class="form-control"  name="cust_status">
+                                                <option value="Registered">Registered</option>
                                                 <option value="Active">Active</option>
                                                 <option value="Suspended">Suspended</option>
                                                 <option value="Deactivate">Deactivate</option>
@@ -163,44 +180,30 @@
                                                 <option value="Private">Private</option>
                                             </select></td>
                                         <td><b>Primary Mobile</b></td>
-                                        <td><input type="text" onkeyup="checkNumbers(this.id)" id="inputMobile" class="form-control" name="primary_mobile"></td>
+                                        <td><input type="text" onkeyup="checkNumbers(this.id)" id="inputMobile" class="form-control" name="primary_mobile" value="<?php echo $row['primary_mobile'];?>"></td>
                                         <td><b>BSS Status</b></td>
                                         <!--                                              isinya prepaid ato postpaid (field yg tidak diisi karakternya 15)
                                                                                             all record cust id, nama  -->
-                                        <td><input type="text" class="form-control" disabled="true" name="bss_status" value="Prepaid"></td>
+                                        <td><input type="text" class="form-control" name="bss_status"></td>
                                     </tr>
                                     <tr>
                                         <td><b>Modified Time</b></td>
-                                        <td><input type="text" class="form-control" disabled="true" name="modified_time"></td>
+                                        <td><input type="text" class="form-control"  name="modified_time" disabled="true" value="<?php echo $row['modified_time'];?>"></td>
                                         <td><b>Corporate Tax ID</b></td>
-                                        <td colspan="3"><input type="text" onkeyup="checkNumbers(this.id)" id="inputTaxID" class="form-control" name="corp_tax_id"></td>
+                                        <td colspan="3"><input type="text" onkeyup="checkNumbers(this.id)" id="inputTaxID" class="form-control" name="corp_tax_id" value="<?php echo $row['corp_tax_id'];?>"></td>
                                     </tr>
                                     <tr>
                                         <td><b>Shared Balance Group</b></td>
-                                        <td><input type="text" class="form-control" name="shared_balance_group"></td>
+                                        <td><input type="text" class="form-control" name="shared_balance_group" value="<?php echo $row['shared_balance_group'];?>"></td>
                                         <td><b>Created Time</b></td>
-                                        <td><input type="text" class="form-control" name="created_time" disabled="true"></td>
+                                        <td><input type="text" class="form-control" name="created_time" disabled="true" value="<?php echo $row['created_time'];?>"></td>
                                         <td><b>Customer Username</b></td>
-                                        <td><input type="text" class="form-control" name="cust_username"></td>
+                                        <td><input type="text" class="form-control" name="cust_username" value="<?php echo $row['cust_username'];?>"></td>
                                     </tr>
                                 </table>
 
                             <bn><hr>
                               <div align="right">
-                                <?php
-                                $status = "";
-                                if(isset($_GET["status"])){
-                                    $status = $_GET['status'];
-                                }
-                                if($status=="OK"){
-                                  echo "<h3>Data Customer ditemukan!</h3>";
-                                }
-                                else{
-                                  if($status=="NO"){
-                                    echo "<h3>Data Customer tidak ditemukan, data tidak valid!</h3>";
-                                  }
-                                }
-                                ?>
                               </div>
                                     <table class="table table-hover" border='2'>
                                         <h4><i class="fa fa-angle-right"></i> PIC Details</h4>

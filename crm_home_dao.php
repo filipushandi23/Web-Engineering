@@ -1,19 +1,19 @@
 <?php
   //table customer field
   $cust_segment = $_POST['cust_segment'];
-  $cust_account_number = "";//$_POST['account_number'];
-  $dukcapil_status = "";//$_POST['status_dukcapil'];
+  $cust_account_number = $_POST['cust_acc_number'];
+  $dukcapil_status = $_POST['status_dukcapil'];
   $cust_category = $_POST['cust_category'];
-  $longitude = "";//$_POST['longitude'];
-  $latitude = "";//$_POST['latitude'];
+  $longitude = "1";//$_POST['longitude'];
+  $latitude = "1";//$_POST['latitude'];
   $residence_type = $_POST['residence_type'];
   $npwp = $_POST['npwp_num'];
   $dob = date('Y-m-d',strtotime(str_replace('/', '-',$_POST['dob'])));
   $is_converted_from_lead = true;//$_POST['is_converted_from_lead'];
-  $customer_status = "";//$_POST['cust_status'];
+  $customer_status = $_POST['cust_status'];
   $occupation = $_POST['occupation'];
   $primary_mobile = $_POST['primary_mobile'];
-  $bss_status = "";//$_POST['bss_status'];
+  $bss_status = $_POST['bss_status'];
   $modified_time = date('Y-m-d H:i:s');//$_POST['modified_time'];
   $corp_tax_id = $_POST['corp_tax_id'];
   $shared_balance_group = $_POST['shared_balance_group'];
@@ -82,17 +82,38 @@
         '$shared_balance_group','$created_time')";
         if(mysqli_query($con,$sql)){
           echo "Insert successfull";
-          header('Location: showCustomer.php');
+          header('Location: crm_home_edit.php?status=1&account_number='.$cust_account_number);
         }
         else{
           echo "Insert failed";
         }
       break;
       case 'Edit':
-        echo "masuk edit";
+        echo "masuk edit<br>";
+        $sql = "UPDATE customer SET cust_username = '$cust_username',cust_segment = '$cust_segment',dukcapil_status = '$dukcapil_status',
+          cust_category = '$cust_category',longitude = '$longitude',latitude = '$latitude',residence_type = '$residence_type',
+          npwp = '$npwp',birth_date = '$dob',is_converted_from_lead = '$is_converted_from_lead',
+          cust_status = '$customer_status',occupation = '$occupation',primary_mobile = '$primary_mobile',
+          bss_status = '$bss_status',modified_time = '$modified_time',corp_tax_id = '$corp_tax_id',
+          shared_balance_group = '$shared_balance_group',created_time = '$created_time'
+          WHERE account_number = '$cust_account_number'";
+
+          if(mysqli_query($con,$sql)){
+            header('Location: crm_home.php');
+          }
+          else{
+            echo "Gagal update";
+          }
       break;
       case 'Delete':
           echo "masuk delete";
+          $sql = "DELETE from customer WHERE account_number = '$cust_account_number'";
+          if(mysqli_query($con,$sql)){
+            header('Location: crm_home.php');
+          }
+          else{
+            echo "Gagal delete";
+          }
       break;
       case 'Check Dukcapil':
           echo "masuk check";
@@ -101,10 +122,17 @@
           $sql = "SELECT * FROM dukcapil WHERE no_kk = '$kk' AND no_ktp='$cust_id'";
           $result = mysqli_query($con,$sql);
           if($row = mysqli_fetch_array($result)){
-            echo "<br>Data anda valid!";
+            $sql = "UPDATE customer SET dukcapil_status = 'Valid' WHERE account_number = '$cust_account_number'";
+            if(mysqli_query($con,$sql)){
+              header('Location: crm_home.php?status=OK');
+            }
+            else{
+              echo "Data tidak valid!";
+            }
           }
           else{
-            echo "<br>Data anda tidak ditemukan!!!";
+            header('Location: crm_home.php?status=NO');
+            //echo "<br>Data anda tidak ditemukan!!!";
           }
 
 
